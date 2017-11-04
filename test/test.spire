@@ -1,3 +1,5 @@
+object City;
 extension District{
-    Test:Int,Test:Int
+    Test:Int,
+    Test:Int
 }

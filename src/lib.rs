@@ -19,14 +19,13 @@ where
     I: RangeStream<Item = char, Range = &'a str>,
 {
     (
-        take_while(|c: char| !c.is_whitespace() && c != ':'),
+        spaces(),
+        take_while(is_ident),
         spaces(),
         token(':'),
         spaces(),
-        take_while(|c: char| {
-            !c.is_whitespace() && c != ',' && c != '}'
-        }),
-    ).map(|(name, _, _, _, ty_name)| {
+        take_while(is_ident),
+    ).map(|(_, name, _, _, _, ty_name)| {
         ast::Field {
             ident: ast::Ident(name),
             ty: ast::Ident(ty_name),
@@ -45,26 +44,11 @@ pub fn fields<'a, I>() -> impl Parser<Input = I, Output = Vec<ast::Field<'a>>>
 where
     I: RangeStream<Item = char, Range = &'a str>,
 {
-    sep_end_by(field(), token(',').skip(whitespace()))
+    sep_end_by(field().skip(spaces()), token(',').skip(whitespace()))
 }
 
-pub fn extension_with_digits<'a, I>() -> impl Parser<Input = I, Output = ast::Extension<'a>>
-where
-    I: RangeStream<Item = char, Range = &'a str>,
-{
-    (
-        spaces(),
-        string("extension").skip(spaces()),
-        take_while(|c: char| !c.is_whitespace() && c != '{').skip(spaces()),
-        token('{').skip(whitespace()),
-        digits().skip(whitespace()),
-        token('}').skip(whitespace()),
-    ).map(|(_, _, name, _, fields, _)| {
-        ast::Extension {
-            ident: ast::Ident(name),
-            fields: Vec::new(),
-        }
-    })
+pub fn is_ident(c: char) -> bool {
+    c.is_alphanumeric()
 }
 pub fn extension<'a, I>() -> impl Parser<Input = I, Output = ast::Extension<'a>>
 where
@@ -73,10 +57,10 @@ where
     (
         spaces(),
         string("extension").skip(spaces()),
-        take_while(|c: char| !c.is_whitespace() && c != '{').skip(spaces()),
-        token('{').skip(whitespace()),
-        fields().skip(whitespace()),
-        token('}').skip(whitespace()),
+        take_while(is_ident).skip(spaces()),
+        token('{').skip(spaces()),
+        fields().skip(spaces()),
+        token('}').skip(spaces()),
     ).map(|(_, _, name, _, fields, _)| {
         ast::Extension {
             ident: ast::Ident(name),
