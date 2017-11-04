@@ -24,7 +24,7 @@ where
         token(':'),
         spaces(),
         take_while(|c: char| {
-            !c.is_whitespace() && c != '\n' && c != ',' && c != '}'
+            !c.is_whitespace() && c != ',' && c != '}'
         }),
     ).map(|(name, _, _, _, ty_name)| {
         ast::Field {
@@ -33,32 +33,12 @@ where
         }
     })
 }
-pub fn field_test<I>() -> impl Parser<Input = I, Output = u32>
-where
-    I: Stream<Item = char>,
-{
-    (
-        many1::<String, _>(satisfy(|c: char| !c.is_whitespace() && c != ':')),
-        spaces(),
-        token(':'),
-        spaces(),
-        many1::<String, _>(satisfy(|c: char| {
-            !c.is_whitespace() && c != '\n' && c != ',' && c != '}'
-        })),
-    ).map(|(name, _, _, _, ty_name)| 1)
-}
-pub fn fields_test<I>() -> impl Parser<Input = I, Output = Vec<u32>>
-where
-    I: Stream<Item = char>,
-{
-    sep_end_by(field_test(), token(',').skip(whitespace()))
-}
 
 pub fn digits<I>() -> impl Parser<Input = I, Output = Vec<char>>
 where
     I: Stream<Item = char>,
 {
-    sep_end_by(digit().skip(spaces()), token(',').skip(spaces()))
+    sep_end_by(digit(), token(',').skip(spaces()))
 }
 
 pub fn fields<'a, I>() -> impl Parser<Input = I, Output = Vec<ast::Field<'a>>>
