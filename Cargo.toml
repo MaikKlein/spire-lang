@@ -1,0 +1,7 @@
+[package]
+name = "spire"
+version = "0.1.0"
+authors = ["Maik Klein <maikklein@googlemail.com>"]
+
+[dependencies]
+combine = "2.5.2"
