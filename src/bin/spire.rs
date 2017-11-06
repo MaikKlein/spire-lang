@@ -8,6 +8,7 @@ fn main() {
     file.read_to_string(&mut input).expect("read");
     let r = spire::entry().parse(input.as_str()).expect("fail");
     println!("{:#?}", r);
+
     spire::fields()
         .parse("Test1:Int,Test2:Int,Test3:Int")
         .expect("fields");
@@ -16,10 +17,10 @@ fn main() {
         .parse("Test1:Int,Test2:Int,Test3:Int,")
         .expect("fields with comma");
 
-    spire::extension()
+    spire::data()
         .parse(
             r#"
-            extension Test {
+            data Test {
                 Test1:Int,Test2:Int,Test3:Int
             }
         "#,
@@ -27,10 +28,10 @@ fn main() {
         .expect("extension fields");
 
     // error :(
-    spire::extension()
+    spire::data()
         .parse(
             r#"
-            extension Test {
+            data Test {
                 Test1:Int,Test2:Int,Test3:Int,
             }
         "#,

@@ -1,5 +1,25 @@
 object City;
-extension District{
-    Test:Int,
-    Test:Int
+
+data Capital {
+
 }
+
+data District{
+    Population: Int,
+}
+
+object MageDistrict;
+
+extend MageDistrict with District {
+    Population = 100,
+}
+
+data City {
+    Districts: List<District>,
+    Name: String,
+}
+
+extend City {
+    RandomField = 10;
+}
+

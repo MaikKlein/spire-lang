@@ -1,19 +1,14 @@
 #![feature(conservative_impl_trait)]
-#[macro_use]
 extern crate combine;
 
 //pub mod parse;
 pub mod ast;
 
-use combine::char::{char, digit, space, spaces, string};
+use combine::char::{digit, space, spaces, string};
 pub use combine::Parser;
-use combine::{choice, many, optional, satisfy, sep_by, sep_end_by, skip_many, token, Stream,
-              many1, skip_many1};
+use combine::{many, satisfy, sep_end_by, skip_many, token, Stream, skip_many1};
 use combine::range::take_while;
-use combine::StreamOnce;
-use combine::primitives::{Range, RangeStream};
-use combine::ParseError;
-use std::collections::HashMap;
+use combine::primitives::RangeStream;
 pub fn field<'a, I>() -> impl Parser<Input = I, Output = ast::Field<'a>>
 where
     I: RangeStream<Item = char, Range = &'a str>,
@@ -50,19 +45,19 @@ where
 pub fn is_ident(c: char) -> bool {
     c.is_alphanumeric()
 }
-pub fn extension<'a, I>() -> impl Parser<Input = I, Output = ast::Extension<'a>>
+pub fn data<'a, I>() -> impl Parser<Input = I, Output = ast::Data<'a>>
 where
     I: RangeStream<Item = char, Range = &'a str>,
 {
     (
         spaces(),
-        string("extension").skip(spaces()),
+        string("data").skip(spaces()),
         take_while(is_ident).skip(spaces()),
         token('{').skip(spaces()),
         fields().skip(spaces()),
         token('}').skip(spaces()),
     ).map(|(_, _, name, _, fields, _)| {
-        ast::Extension {
+        ast::Data {
             ident: ast::Ident(name),
             fields: fields,
         }
@@ -101,12 +96,6 @@ where
     I: RangeStream<Item = char, Range = &'a str>,
 {
     let ast_object = object().map(|o| ast::Ast::Object(o));
-    let ast_extension = extension().map(|e| ast::Ast::Extension(e));
-    many(ast_object.or(ast_extension).skip(whitespace()))
+    let ast_data = data().map(|e| ast::Ast::Data(e));
+    many(ast_object.or(ast_data).skip(whitespace()))
 }
-
-//pub fn wbl<'a, I>() -> impl Parser<Input = I, Output = Vec<ast::Ast<'a>>>
-//    where
-//    I: RangeStream<Item = char, Range = &'a str>,
-//{
-//}

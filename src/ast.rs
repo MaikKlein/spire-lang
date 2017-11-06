@@ -60,7 +60,7 @@ pub struct Field<'a> {
 }
 
 #[derive(Debug, Clone)]
-pub struct Extension<'a> {
+pub struct Data<'a> {
     pub ident: Ident<'a>,
     pub fields: Vec<Field<'a>>,
 }
@@ -76,5 +76,5 @@ impl<'a> Object<'a> {
 #[derive(Debug)]
 pub enum Ast<'a>{
     Object(Object<'a>),
-    Extension(Extension<'a>)
+    Data(Data<'a>)
 }
